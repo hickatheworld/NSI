@@ -52,6 +52,21 @@ def distance(img1, img2):
         S += abs(img1[i] - img2[i])
     return S
 
+def guess(i):
+    print('Guessing image n°' + str(i))
+    to_guess = data['test_images'][i]
+    answer = data['test_labels'][i]
+    best_dist = None
+    closest = 0
+    for j in range(len(data['train_images'])):
+        img = data['train_images'][j]
+        dist = distance(to_guess, img)
+        if (best_dist == None or dist < best_dist):
+            closest = j
+            best_dist = dist
+    guess = data['train_labels'][closest]
+    print('Guess:', guess, 'Actual number:', answer, 'Distance:', best_dist)
+    return guess == answer
 
 start = time.time()
 print('Loading data...')
@@ -61,5 +76,9 @@ load('test_images', 1000)
 load('test_labels', 1000)
 print('Loaded, took ' + str(time.time() - start) + 's')
 
-dist = distance(data['train_images'][0], data['train_images'][1])
-print('Distance between first and second train images:', dist)
+good_guesses = 0
+for i in range(1000):
+    if guess(i):
+        good_guesses+=1
+rate = good_guesses/1000 * 100
+print('Success rate: ' + str(rate) + '%')
