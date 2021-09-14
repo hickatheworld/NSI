@@ -1,7 +1,6 @@
-import pygame
-from pygame.locals import *
 import time
 
+pygame.display.init()
 IMG_WIDTH = 28
 IMG_HEIGHT = 28
 
@@ -68,6 +67,35 @@ def guess(i):
     print('Guess:', guess, 'Actual number:', answer, 'Distance:', best_dist)
     return guess == answer
 
+def k_guess(i, k):
+    print('Guessing image n°' + str(i))
+    to_guess = data['test_images'][i]
+    answer = data['test_labels'][i]
+    nn = [[-1, 200000] for i in range(k)]
+    for j in range(len(data['train_images'])):
+        img = data['train_images'][j]
+        dist = distance(to_guess, img)
+        if (dist < nn[-1][1]):
+            nn[-1] = [j, dist]
+            nn.sort(key= lambda l: l[1])
+    labels = []
+    for i in range(k):
+        labels.append(data['train_labels'][nn[i][0]])
+    guess = most_frequent(labels)
+    print('Guess:', guess, 'Actual number:', answer)
+    return guess == answer
+
+def most_frequent(lst):
+    counter = 0
+    num = lst[0]
+    for i in lst:
+        current = lst.count(i)
+        if(current > counter):
+            counter = current
+            num = i
+    return num
+
+
 start = time.time()
 print('Loading data...')
 load('train_images', 6000)
@@ -75,10 +103,3 @@ load('train_labels', 6000)
 load('test_images', 1000)
 load('test_labels', 1000)
 print('Loaded, took ' + str(time.time() - start) + 's')
-
-good_guesses = 0
-for i in range(1000):
-    if guess(i):
-        good_guesses+=1
-rate = good_guesses/1000 * 100
-print('Success rate: ' + str(rate) + '%')
