@@ -121,9 +121,11 @@ def display_guess(i):
     pygame.draw.rect(win, (0, 0, 0), pygame.Rect(0,IMG_HEIGHT * 4 + 10, 800, 14))
     txt = small_font.render('Guessed: ' + str(guess[0]) + ' | Actual number: ' + str(num), True, (255, 255, 255))
     win.blit(txt, dest=(0, IMG_HEIGHT * 4 + 10))
+    txt = small_font.render(str(K_FACTOR) + ' nearest neighboors:', True, (255, 255, 255))
+    win.blit(txt, dest=(0, IMG_HEIGHT * 4 + 30))
     for i in range(K_FACTOR):
-        txt = small_font.render(str(K_FACTOR) + ' nearest neighboors:', True, (255, 255, 255))
-        win.blit(txt, dest=(0, IMG_HEIGHT * 4 + 30))
+        txt = small_font.render(str(data['train_labels'][guess[1][i]]), True, (255, 255, 255))
+        win.blit(txt, dest=(20 + 28*i, IMG_HEIGHT * 4 + 80))
         disp(data['train_images'][guess[1][i]], 1, (i*IMG_WIDTH, IMG_HEIGHT * 4 + 50))
     pygame.display.flip()
 
