@@ -81,10 +81,12 @@ def k_guess(i, k):
             nn[-1] = [j, dist]
             nn.sort(key= lambda l: l[1])
     labels = []
+    nn_indexes=[]
     for i in range(k):
         labels.append(data['train_labels'][nn[i][0]])
+        nn_indexes.append(nn[i][0])
     guess = most_frequent(labels)
-    return guess
+    return (guess, nn_indexes)
 
 def most_frequent(lst):
     counter = 0
@@ -103,12 +105,31 @@ win = pygame.display.set_mode((800, 600))
 big_font = pygame.font.SysFont('Consolas', 50)
 small_font = pygame.font.SysFont('Consolas', 14)
 
-def display_image(i, zoom=4, dest=(0, 0)):
+def display_guess(i):
     global guesses
     win.fill((0,0,0))
+    img = data['test_images'][i]
+    disp(img, 4, (0,0))
+    if (len(guesses) == i):
+        txt = small_font.render('Guessing...', True, (255, 255, 255))
+        win.blit(txt, dest=(0, IMG_HEIGHT * 4 + 10))
+        pygame.display.flip()
+        g = k_guess(i, K_FACTOR)
+        guesses.append(g)
+    num = data['test_labels'][i]
+    guess = guesses[i]
+    pygame.draw.rect(win, (0, 0, 0), pygame.Rect(0,IMG_HEIGHT * 4 + 10, 800, 14))
+    txt = small_font.render('Guessed: ' + str(guess[0]) + ' | Actual number: ' + str(num), True, (255, 255, 255))
+    win.blit(txt, dest=(0, IMG_HEIGHT * 4 + 10))
+    for i in range(K_FACTOR):
+        txt = small_font.render(str(K_FACTOR) + ' nearest neighboors:', True, (255, 255, 255))
+        win.blit(txt, dest=(0, IMG_HEIGHT * 4 + 30))
+        disp(data['train_images'][guess[1][i]], 1, (i*IMG_WIDTH, IMG_HEIGHT * 4 + 50))
+    pygame.display.flip()
+
+def disp(img, zoom, dest):
     x = 0
     y = 0
-    img = data['test_images'][i]
     for v in img:
         v = 255 - v
         pygame.draw.rect(win, (v, v, v), pygame.Rect(14 * zoom + dest[0] + x * zoom, dest[1] + y * zoom, zoom, zoom))
@@ -116,18 +137,6 @@ def display_image(i, zoom=4, dest=(0, 0)):
         if x == IMG_HEIGHT:
             x = 0
             y += 1
-    if (len(guesses) == i):
-        txt = small_font.render('Guessing...', True, (255, 255, 255))
-        win.blit(txt, dest=(dest[0], dest[1] + IMG_HEIGHT * zoom + 10))
-        pygame.display.flip()
-        g = k_guess(i, K_FACTOR)
-        guesses.append(g)
-    num = data['test_labels'][i]
-    guess = guesses[i]
-    pygame.draw.rect(win, (0, 0, 0), pygame.Rect(dest[0], dest[1] + IMG_HEIGHT * zoom + 10, 800, 14))
-    txt = small_font.render('Guessed: ' + str(guess) + ' | Actual number: ' + str(num), True, (255, 255, 255))
-    win.blit(txt, dest=(dest[0], dest[1] + IMG_HEIGHT * zoom + 10))
-    pygame.display.flip()
 
 
 loading_text = big_font.render('Loading images...', True, (255, 255, 255))
@@ -145,7 +154,7 @@ print('Loaded, took ' + str(time.time() - start) + 's')
 guesses = []
 index = 0
 lock = True
-display_image(0, 4, (250, 50))
+display_guess(0)
 while lock:
     for e in pygame.event.get():
         if e.type == QUIT:
@@ -153,8 +162,8 @@ while lock:
         if e.type == KEYDOWN:
             if e.key == K_RIGHT:
                 index+=1
-                display_image(index, 4, (250, 50))
+                display_guess(index)
             if e.key == K_LEFT and index > 0:
                 index-=1
-                display_image(index, 4, (250, 50))
+                display_guess(index)
 pygame.quit()
