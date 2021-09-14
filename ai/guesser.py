@@ -1,6 +1,5 @@
 import time
 
-pygame.display.init()
 IMG_WIDTH = 28
 IMG_HEIGHT = 28
 
