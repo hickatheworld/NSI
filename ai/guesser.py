@@ -71,6 +71,7 @@ def guess(i):
     return guess == answer
 
 def k_guess(i, k):
+    global guess_amount
     to_guess = data['test_images'][i]
     answer = data['test_labels'][i]
     nn = [[-1, 200000] for i in range(k)]
@@ -86,6 +87,10 @@ def k_guess(i, k):
         labels.append(data['train_labels'][nn[i][0]])
         nn_indexes.append(nn[i][0])
     guess = most_frequent(labels)
+    if guess == answer:
+        global correct_guesses
+        correct_guesses+=1
+    guess_amount+=1
     return (guess, nn_indexes)
 
 def most_frequent(lst):
@@ -107,6 +112,7 @@ small_font = pygame.font.SysFont('Consolas', 14)
 
 def display_guess(i):
     global guesses
+    global correct_guesses
     win.fill((0,0,0))
     img = data['test_images'][i]
     disp(img, 4, (0,0))
@@ -127,6 +133,8 @@ def display_guess(i):
         txt = small_font.render(str(data['train_labels'][guess[1][i]]), True, (255, 255, 255))
         win.blit(txt, dest=(20 + 28*i, IMG_HEIGHT * 4 + 80))
         disp(data['train_images'][guess[1][i]], 1, (i*IMG_WIDTH, IMG_HEIGHT * 4 + 50))
+    txt = small_font.render('Accuracy: ' + str(correct_guesses/guess_amount * 100) + '%', True, (255, 255, 255))
+    win.blit(txt, dest=(0, 500))
     pygame.display.flip()
 
 def disp(img, zoom, dest):
@@ -154,6 +162,8 @@ load('test_labels', 1000)
 print('Loaded, took ' + str(time.time() - start) + 's')
 
 guesses = []
+correct_guesses = 0
+guess_amount = 0
 index = 0
 lock = True
 display_guess(0)
