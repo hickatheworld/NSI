@@ -1,3 +1,3 @@
 # Too heavy files, get on http://yann.lecun.com/exdb/mnist/
-ai/train-images.idx3-ubyte
-ai/train-labels.idx1-ubyte
+*.idx3-ubyte
+*.idx1-ubyte
