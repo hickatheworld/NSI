@@ -26,6 +26,8 @@ files = {
     'test_labels': open('t10k-labels.idx1-ubyte', mode='br')
 }
 
+correct_guess_amount=0
+
 # Skip metadata
 files['train_images'].read(16)
 files['test_images'].read(16)
@@ -133,7 +135,7 @@ pygame.display.set_caption('MNIST')
 
 
 def display_guess(i):
-    WIN.fill((0, 0, 0))
+    clear()
     img = data['test_images'][i]
     # -> Displaying Test image
     disp_img(img, 8, (WIN_WIDTH / 2 - 8 * IMG_WIDTH, 60))
@@ -145,6 +147,9 @@ def display_guess(i):
         text('Guessing...', WIN_WIDTH / 2, IMG_HEIGHT * 8 + 60 + 10, x_origin='center')
         pygame.display.flip()
         g = k_guess(i, K_FACTOR)
+        if g[0] == data['test_labels'][i]:
+            global correct_guess_amount
+            correct_guess_amount += 1
         guesses.append(g)
     guess = guesses[i]
     # -> Displaying Neighboors images + labels
@@ -159,6 +164,7 @@ def display_guess(i):
     expected_num = data['test_labels'][i]
     text('Guessed: ' + str(guessed_num) + ' | Expected: ' + str(expected_num), WIN_WIDTH / 2, IMG_HEIGHT * 8 + 60 + 10, x_origin='center')  # 10 <=> Margin with image
     text(str(K_FACTOR) + ' nearest neighboors:', WIN_WIDTH / 2, IMG_HEIGHT * 8 + 60 + 30, x_origin='center')  # 30 <=> Margin with above text
+    text('Accuracy so far: ' + str(round(correct_guess_amount / len(guesses) * 100, 2)) + '%   ', 10, WIN_HEIGHT - 20) # spaces in case of smaller length percentage
     pygame.display.flip()
 
 
@@ -177,6 +183,8 @@ def disp_img(img, zoom, dest):
 def rect(x, y, w, h, c):
     pygame.draw.rect(WIN, c, pygame.Rect(x, y, w, h))
 
+def clear():
+    pygame.draw.rect(WIN, (0, 0, 0), pygame.Rect(0, 0, WIN_WIDTH, WIN_HEIGHT - 20)) # Space for accuracy indicator
 
 def text(content, x, y, size=14, x_origin='corner', y_origin='corner'):
     """
