@@ -101,9 +101,9 @@ def k_guess(i, k):
         # Therefore, if dist is smaller than the greatest distance stored in nn, it can replace it.
         if (dist < nn[-1][1]):
             nn[-1] = [j, dist]
-            nn.sort(key= lambda l: l[1])
+            nn.sort(key=lambda l: l[1])
     labels = [] # The labels of the nearest neighboors
-    nn_indexes=[] # The indexes of the nearest neighboors
+    nn_indexes = [] # The indexes of the nearest neighboors
     for i in range(k):
         labels.append(data['train_labels'][nn[i][0]])
         nn_indexes.append(nn[i][0])
@@ -129,60 +129,74 @@ pygame.init()
 WIN_WIDTH = 600
 WIN_HEIGHT = 600
 WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
-big_font = pygame.font.SysFont('Consolas', 50)
-small_font = pygame.font.SysFont('Consolas', 14)
 pygame.display.set_caption('MNIST')
 
+
 def display_guess(i):
-    WIN.fill((0,0,0))
+    WIN.fill((0, 0, 0))
     img = data['test_images'][i]
     # -> Displaying Test image
     disp_img(img, 8, (WIN_WIDTH / 2 - 8 * IMG_WIDTH, 60))
-    if (len(guesses) == i): # if len(guesses) == i, the user is trying to access an image that has not been guessed yet.
-        txt = small_font.render('Guessing...', True, (255, 255, 255))
-        w = txt.get_width()
-        WIN.blit(txt, dest=(WIN_WIDTH / 2 - w / 2, IMG_HEIGHT * 8 + 60 + 10)) # 8 <=> Zoom factor ; 60 <=> Title text ; 10 <=> Margin with image
+    # -> Displaying Title
+    text('Image #' + str(i), WIN_WIDTH / 2, 10, 30, 'center')
+    # if len(guesses) == i, the user is trying to access an image that has not been guessed yet.
+    if (len(guesses) == i):
+        # 8 <=> Zoom factor ; 60 <=> Title text ; 10 <=> Margin with image
+        text('Guessing...', WIN_WIDTH / 2, IMG_HEIGHT * 8 + 60 + 10, x_origin='center')
         pygame.display.flip()
         g = k_guess(i, K_FACTOR)
         guesses.append(g)
     guess = guesses[i]
     # -> Displaying Neighboors images + labels
     for j in range(K_FACTOR):
-        full_width = K_FACTOR * 28 # The width of all the neighboor images side by side.
-        disp_img(data['train_images'][guess[1][j]], 1, (WIN_WIDTH / 2  - full_width / 2 + j * IMG_WIDTH - IMG_WIDTH / 2, IMG_HEIGHT * 8 + 60 + 50)) # 50 <=> Info texts
-        txt = small_font.render(str(data['train_labels'][guess[1][j]]), True, (255, 255, 255))
-        w = txt.get_width()
-        WIN.blit(txt, dest=(WIN_WIDTH / 2  - full_width / 2 + j * IMG_WIDTH - IMG_WIDTH / 2 + IMG_WIDTH - w / 2, IMG_HEIGHT * 8 + 60 + 50 + IMG_HEIGHT + 5)) # 5 <=> Margin with neighboor images 
+        # The width of all the neighboor images side by side.
+        full_width = K_FACTOR * 28
+        disp_img(data['train_images'][guess[1][j]], 1, (WIN_WIDTH / 2 - full_width / 2 + j * IMG_WIDTH - IMG_WIDTH / 2, IMG_HEIGHT * 8 + 60 + 50))  # 50 <=> Info texts
+        text(str(data['train_labels'][guess[1][j]]), WIN_WIDTH / 2 - full_width / 2 + j * IMG_WIDTH - IMG_WIDTH / 2 + IMG_WIDTH, IMG_HEIGHT * 8 + 60 + 50 + IMG_HEIGHT + 5, x_origin='center')  # 5 <=> Margin with neighboor images
+
     # -> Displaying Info texts
-    guessed_num = guess[0] 
+    guessed_num = guess[0]
     expected_num = data['test_labels'][i]
-    txt = small_font.render('Guessed: ' + str(guessed_num) + ' | Expected: ' + str(expected_num), True, (255, 255, 255))
-    w = txt.get_width()
-    rect(WIN_WIDTH / 2 - w / 2, IMG_HEIGHT * 8 + 60, w, 24, (0, 0, 0))
-    WIN.blit(txt, dest=(WIN_WIDTH / 2 - w / 2, IMG_HEIGHT * 8 + 60 + 10)) # 10 <=> Margin with image 
-
-
+    text('Guessed: ' + str(guessed_num) + ' | Expected: ' + str(expected_num), WIN_WIDTH / 2, IMG_HEIGHT * 8 + 60 + 10, x_origin='center')  # 10 <=> Margin with image
+    text(str(K_FACTOR) + ' nearest neighboors:', WIN_WIDTH / 2, IMG_HEIGHT * 8 + 60 + 30, x_origin='center')  # 30 <=> Margin with above text
     pygame.display.flip()
+
 
 def disp_img(img, zoom, dest):
     x = 0
     y = 0
     for v in img:
         v = 255 - v
-        rect(14 * zoom + dest[0] + x * zoom,  dest[1] + y * zoom, zoom, zoom, (v, v, v))
+        rect(14 * zoom + dest[0] + x * zoom, dest[1] + y * zoom, zoom, zoom, (v, v, v))
         x += 1
         if x == IMG_HEIGHT:
             x = 0
             y += 1
 
+
 def rect(x, y, w, h, c):
     pygame.draw.rect(WIN, c, pygame.Rect(x, y, w, h))
 
 
-loading_text = big_font.render('Loading data...', True, (255, 255, 255))
-w = loading_text.get_width()
-h = loading_text.get_height()
-WIN.blit(loading_text, dest=(WIN_WIDTH / 2 - w / 2, WIN_HEIGHT / 2 - h / 2))
+def text(content, x, y, size=14, x_origin='corner', y_origin='corner'):
+    """
+    Displays a text on screen.
+    """
+    font = pygame.font.SysFont('Consolas', size)
+    txt = font.render(content, True, (255, 255, 255))
+    w = txt.get_width()
+    h = txt.get_height()
+    dest = [x, y]
+    if (x_origin == 'center'):
+        dest[0] -= w/2
+    if (y_origin == 'center'):
+        dest[1] -= h/2
+    # Clear area behind text to avoid overlapping.
+    pygame.draw.rect(WIN, (0, 0, 0), pygame.Rect(dest[0], dest[1], w, h))
+    WIN.blit(txt, dest=tuple(dest))
+
+
+text('Loading data...', WIN_WIDTH/2, WIN_HEIGHT/2, 60, 'center', 'center')
 pygame.display.flip()
 
 start = time.time()
@@ -203,9 +217,9 @@ while lock:
             lock = False
         if e.type == KEYDOWN:
             if e.key == K_RIGHT:
-                index+=1
+                index += 1
                 display_guess(index)
             if e.key == K_LEFT and index > 0:
-                index-=1
+                index -= 1
                 display_guess(index)
 pygame.quit()
