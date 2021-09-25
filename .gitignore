@@ -1,3 +1,6 @@
 # Too heavy files, get on http://yann.lecun.com/exdb/mnist/
 *.idx3-ubyte
 *.idx1-ubyte
+
+homework/mots.txt
+homework/dico.txt
