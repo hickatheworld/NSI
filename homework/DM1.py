@@ -53,17 +53,17 @@ print(f'Le fichier contient {len(dico)} mots')
 
 ### 2.
 def mot_dans_dico(mot, dico):
-    start = 0
-    end = len(dico)-1
-    while start <= end:
-        M = (start + end)//2
+    debut = 0
+    fin = len(dico)-1
+    while debut <= fin:
+        M = (debut + fin)//2
         m = dico[M]
         if mot == m:
             return True
         elif mot < m:
-            end = M-1
+            fin = M-1
         else:
-            start = M+1
+            debut = M+1
     return False
 
 mots = charger_fichier('mots.txt')
