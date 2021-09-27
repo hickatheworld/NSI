@@ -1,9 +1,9 @@
 from pile import Pile
 
 p = Pile ()
-p.empile("n")
-p.empile("s")
-p.empile("i")
+p.empile('n')
+p.empile('s')
+p.empile('i')
 
 
 ## Exercice 2
@@ -49,3 +49,30 @@ def rotation(p):
     p.empile(h)
     while not p1.est_vide():
         p.empile(p1.depile())
+
+## Exercice 6
+def test_parenthesage(s):
+    fermants = (')', ']', '}')
+    fermants_attendus = Pile()
+    for c in s:
+        if c == '(':
+            fermants_attendus.empile(')')
+        if c == '{':
+            fermants_attendus.empile('}')
+        if c == '[':
+            fermants_attendus.empile(']')
+        if c in fermants:
+            if fermants_attendus.est_vide() or c != fermants_attendus.depile():
+                return False
+    return fermants_attendus.est_vide()
+
+
+assert test_parenthesage ('(a)(b)(((c)(d)))') == True, 't1'
+assert test_parenthesage ('([b]){((c))[d]}') == True, 't2'
+assert test_parenthesage ('(') == False, 't3'
+assert test_parenthesage ('(a))') == False, 't4'
+assert test_parenthesage ('((a))}') == False, 't5'
+assert test_parenthesage ('[[a]') == False, 't6'
+assert test_parenthesage ('[(a])') == False, 't7'
+assert test_parenthesage ('{((a)})') == False, 't8'
+print('Tests réussis.')
