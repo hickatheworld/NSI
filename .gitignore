@@ -5,6 +5,8 @@
 homework/mots.txt
 homework/dico.txt
 homework/accidents-2019.csv
+homework/station_information.csv
+homework/station_status.csv
 
 stacks/pile.py
 
