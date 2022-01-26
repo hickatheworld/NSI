@@ -1,5 +1,4 @@
 from datetime import datetime
-from io import FileIO
 from typing import Tuple
 
 
@@ -33,8 +32,6 @@ for i in range(1,len(raw_stations)):
 	station_entry = raw_stations[i][:-1].split(';')
 	status_entry = raw_status[i][:-1].split(';')
 	stations.append(Station(station_entry, status_entry))
-raw_stations.close()
-raw_status.close()
 
 ## Question a
 print('\n== Question (a) ==\n')
