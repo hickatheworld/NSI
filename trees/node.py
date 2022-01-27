@@ -1,7 +1,7 @@
 from displayer import display
 from random import randint
 
-class Node :
+class Node:
 
     def __init__(self, value):
         self.value = value
@@ -20,8 +20,6 @@ class Node :
         return self.children
 
     def size(self):
-        if len(self.children) == 0:
-            return 1
         c = 1
         for child in self.children:
             c+=child.size()
@@ -69,7 +67,7 @@ class Node :
     def niveau(self, n):
         assert n <= self.height() 
         lst = []
-        if n ==0:
+        if n==0:
             return [self.value]
         if n-1==0:
             return [c.value for c in self.children]
@@ -77,20 +75,40 @@ class Node :
             lst.extend(c.niveau(n-1))
         return lst
 
+    def largeur(self):
+        pass
+
+    def rightest_leaf(self, p=0):
+        n = len(self.children)
+        lst = []
+        if n == 0:
+            return [p, self.value]
+        for i in range(len(self.children)):
+            c = self.children[i]
+            lst.append(c.rightest_leaf(p+i))
+        max_p = [0,0]
+        print(lst)
+        for c in lst:
+            print(c)
+            if c[0] > max_p[0]:
+                max_p = c
+        return max_p
+
 
 def get_random_tree(node=Node("R"), depth=3):
     """ Renvoie un arbre "aléatoire" de hauteur depth. """
     if depth==0:
         return node
-    for i in range(randint(1, 3)):
+    for i in range(randint(0, 3)):
         etiq = chr(randint(65, 90))
         new_node = Node(etiq)
         child = get_random_tree(new_node, depth-1)
         node.children.append(child)
     return node
-    
 
 root = get_random_tree()
 print(root.height())
-print(root.niveau(4))
+print(root.size())
+print(root.arity())
+print(root.rightest_leaf())
 display(root, 20)
