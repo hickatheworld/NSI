@@ -25,11 +25,11 @@ class Node:
             c+=child.size()
         return c
 
-    def height(self, depth=0):
-        if len(self.children) == 0:
-            return depth
-        depths = [c.height(depth+1) for c in self.children]
-        return max(depths)
+    def height(self):
+        h = 0
+        for c in self.children:
+            h = max(h, c.height())
+        return h + 1
     
     def arity(self, current_max=0):
         if len(self.children) == 0:
@@ -75,24 +75,10 @@ class Node:
             lst.extend(c.niveau(n-1))
         return lst
 
-    def largeur(self):
-        pass
-
-    def rightest_leaf(self, p=0):
-        n = len(self.children)
-        lst = []
-        if n == 0:
-            return [p, self.value]
-        for i in range(len(self.children)):
-            c = self.children[i]
-            lst.append(c.rightest_leaf(p+i))
-        max_p = [0,0]
-        print(lst)
-        for c in lst:
-            print(c)
-            if c[0] > max_p[0]:
-                max_p = c
-        return max_p
+    def rightest_leaf(self):
+        if len(self.children) == 0:
+            return self
+        return self.children[-1].rightest_leaf()
 
 
 def get_random_tree(node=Node("R"), depth=3):
@@ -107,8 +93,4 @@ def get_random_tree(node=Node("R"), depth=3):
     return node
 
 root = get_random_tree()
-print(root.height())
-print(root.size())
-print(root.arity())
-print(root.rightest_leaf())
 display(root, 20)
