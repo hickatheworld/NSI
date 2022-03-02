@@ -1,6 +1,10 @@
-import pygame, os
-import shutil, subprocess
+import os
+import subprocess
+import sys
+
+import pygame
 from PIL import Image
+
 pygame.init()
 
 # Constantes
@@ -135,8 +139,8 @@ def show_hidden_data(filename):
         pygame.display.update()
     
     # Affichage du résultat et retour à l'écran d'accueil
-    show_home()
     if mode == 'Image':
+        show_home() # L'accueil est appelé en premier car la méthode result.show() est bloquante.
         result.show()
     else:
         # Écriture du résultat dans un fichier texte
@@ -145,14 +149,15 @@ def show_hidden_data(filename):
         f.write(txt)
         f.close()
         # Ouverture du fichier texte dans l'éditeur de texte de l'OS
-        if hasattr(os, "startfile"): # Windows 
+        # Plusieurs méthodes sont essayées pour assurer un bon fonctionnement dans la majorité des systèmes.
+        if sys.platform == 'win32': # Windows
             os.startfile(textfile)
-        elif shutil.which("xdg-open"): # Linux
-            subprocess.call(["xdg-open", textfile])
-        elif "EDITOR" in os.environ: # Mac OS X
-            subprocess.call([os.environ["EDITOR"], textfile])
-        else: # En cas de problème
-            print(txt)
+        elif sys.platform == 'darwin': # Mac OS X
+            subprocess.call(('open', textfile))
+        else:
+            subprocess.call(('xdg-open', textfile)) # Linux (testé sous Ubuntu)
+        print(txt) # Au cas où aucune de ces méthodes n'a fonctionné, on affiche aussi le résultat dans la console.
+        show_home()
 
 # Boucle principale
 # Deux modes possibles: Image -> trouve l'image cachée, Texte -> trouve le texte caché
