@@ -90,7 +90,7 @@ def get_back(v):
     """
     Récupère la valeur des bits de poids faible dans l'octet donné.
     """
-	# front = v >> 4
+	# front = v >> 4x
     back = v & 0xF
     return back
 
@@ -120,7 +120,7 @@ def show_hidden_data(filename):
         for y in range(h):
             r, g, b = original.getpixel((x, y))
             if mode == 'Image':
-                result.putpixel((x, y), (get_back(r), get_back(g), get_back(b)))
+                result.putpixel((x, y), (get_back(r) << 4, get_back(g) << 4 , get_back(b) << 4))
             else:
                 # Les bits rouges sont premiers dans la séquence de 12 bits, les bits verts suivent, et les bits bleus les derniers.
                 # On doit donc les décaler pour avoir la valeur correcte.
